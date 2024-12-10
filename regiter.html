@@ -1,0 +1,40 @@
+<?php
+include 'db.php';
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $username = $_POST['username'];
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+
+    // Prepared statement untuk keamanan
+    $stmt = $conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
+    $stmt->bind_param("ss", $username, $password);
+
+    if ($stmt->execute()) {
+        header("Location: login.php");
+        exit(); // Pastikan untuk menghentikan eksekusi setelah redirect
+    } else {
+        echo "Error: " . $stmt->error; // Menampilkan pesan kesalahan
+    }
+
+    $stmt->close();
+    $conn->close();
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrasi</title>
+</head>
+<body>
+    <h1>Registrasi Pengguna</h1>
+    <form method="POST">
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit">Daftar</button>
+    </form>
+    <p>Sudah punya akun? <a href="login.php">Login di sini</a></p>
+    <link rel="stylesheet" href="style.css">
+</body>
+</html>
